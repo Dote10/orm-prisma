@@ -5,15 +5,32 @@ process.env.NODE_ENV == 'prod'?
                 : dotenv.config({path:'./.env.local'});
 
 import bodyParser from "body-parser";
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
+import { userRouter } from "./routers/users.js"
+
 
 const app = express()
-
 const prisma = new PrismaClient({
-    log:["query"]
+    log:['query']
 })
 
 app.use(bodyParser.json())
+
+//에러처리기
+app.use((err, req, res, next)=>{
+    console.error(err);
+    res.status(200).send("에러가 발생했습니다.");
+})
+
+
+//라우터 등록
+
+app.use('/users',userRouter);
+
+
+/**
+ * 객체 article 예시 
+ */
 
 app.get('/',(req,res) =>{
     res.send("Hello prisma");
