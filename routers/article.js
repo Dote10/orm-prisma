@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { deleteArticleById,  getArticle,  getArticleById, getArticlesWithSequential,  } from "../controller/article.js";
-import {  createArticleWithUserId, getArticles } from "../controller/users.js";
+import { deleteArticleById, getArticleById  } from "../controller/article.js";
+import {  createArticleWithUserId,  getArticlesWithCount } from "../controller/users.js";
 
 export const articleRouter = Router();
 
 
 
-articleRouter.get('',getArticles);
+articleRouter.get('',getArticlesWithCount);
 
 articleRouter.post('',createArticleWithUserId);
 

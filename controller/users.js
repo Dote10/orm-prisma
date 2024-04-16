@@ -65,7 +65,7 @@ export const createProfile = async (req, res)=> {
  * @param {*} req 
  * @param {*} res 
  */
-export const getArticles = async (req, res) => {
+export const getArticlesWithCount = async (req, res) => {
     const where = {
         state: req.query.state? req.query.state: {in:['DRAFT','PUBLISHED']}
     };

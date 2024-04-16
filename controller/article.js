@@ -41,6 +41,15 @@ export const getArticleById = async(req,res) =>{
     res.json(article);
 }
 
+export const getArticleByUserIdWithRawQuery = async (req, res)=> {
+     const articles = await prisma.$queryRaw`SELECT * 
+     FROM articles AS a 
+     JOIN User AS u On a.userId = u.id 
+     WHERE a.userId=${+req.params.id}`
+     res.json(articles);
+}
+
+
 export const createArticleTogetherWithUser = async(req,res) => {
     const userAndArticle = await prisma.user.create({
         data:{
