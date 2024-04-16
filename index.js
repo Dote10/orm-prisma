@@ -7,6 +7,7 @@ process.env.NODE_ENV == 'prod'?
 import bodyParser from "body-parser";
 import { PrismaClient } from "@prisma/client";
 import { userRouter } from "./routers/users.js"
+import { productRouter } from "./routers/product.js";
 
 
 const app = express()
@@ -16,6 +17,8 @@ const prisma = new PrismaClient({
 
 app.use(bodyParser.json())
 
+
+
 //에러처리기
 app.use((err, req, res, next)=>{
     console.error(err);
@@ -24,9 +27,8 @@ app.use((err, req, res, next)=>{
 
 
 //라우터 등록
-
 app.use('/users',userRouter);
-
+app.use('/products',productRouter)
 
 /**
  * 객체 article 예시 
