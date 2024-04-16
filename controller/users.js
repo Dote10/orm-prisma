@@ -67,7 +67,7 @@ export const createProfile = async (req, res)=> {
  */
 export const getArticles = async (req, res) => {
     const where = {
-        state: req.query.state? req.query.state: ('DRAFT'||'PUBLISHED')
+        state: req.query.state? req.query.state: {in:['DRAFT','PUBLISHED']}
     };
 
     const articleAndCount = await prisma.user.findMany({
@@ -87,7 +87,6 @@ export const getArticles = async (req, res) => {
     
     res.json(articleAndCount);
 }
-
 
 export const getArticlesByUserId = async (req, res) =>{
     const articles = await prisma.user.findMany({
@@ -131,7 +130,7 @@ export const getArticlesByUserId = async (req, res) =>{
  }
 
 
-export const createArticle = async (req, res) =>{
+export const createArticleWithUserId = async (req, res) =>{
 
     const user = await prisma.user.findUnique({where:{
         id: +req.params.id
@@ -151,4 +150,36 @@ export const createArticle = async (req, res) =>{
     });
 
     res.json(article);
+}
+
+export const createUsersWithInteractive = async (req,res) =>{
+   const user = await prisma.$transaction( async (tx)=>{
+        let user = await tx.user.findFirst({
+            where:{
+                email: req.body.email
+            }
+        });
+
+        if(user){
+            throw new Error('해당 email은 이미 가입한 회원이 존재합니다.');
+        }
+
+        user = await tx.user.create({
+            data:{
+                email: req.body.email,
+                name : req.body.name
+            }
+        });
+
+        const profile = await tx.profile.create({
+            data:{
+                ...req.body.profile,
+                userId:user.id
+            }
+        })
+
+        return {...user, profile}
+    });
+
+    res.json(user);
 }

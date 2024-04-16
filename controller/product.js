@@ -25,3 +25,19 @@ export const createProduct = async (req,res) => {
 
     res.json(products);
 }
+
+export const createProductListByEmail = async (req,res) => {
+
+
+    const productList = await prisma.seller.create({
+        data:{
+            email: req.body.email,
+            name: req.body.name,
+            products: {
+                create: req.body.products
+            }
+        }
+    });
+
+    res.json(productList);
+}

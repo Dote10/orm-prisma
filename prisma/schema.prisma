@@ -54,12 +54,22 @@ model User{
   carts Cart[]
 }
 
+
+model Seller{
+  id Int @id @default(autoincrement())
+  email String @unique
+  name  String 
+  products Product[]
+}
+
 model Product{
   id Int @id @default(autoincrement())
   title String
   price Float
+  sellerId Int
   tag Tag[]
   carts Cart[]
+  seller Seller @relation(fields: [sellerId],references: [id])
 }
 
 model Cart{

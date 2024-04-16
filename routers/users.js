@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import { createArticle, createProfile, createUser, deleteUnPublishedArticle, getArticles, getArticlesByUserId, getUser } from '../controller/users.js';
+import { createArticleWithUserId, createProfile, createUser, createUsersWithInteractive, deleteUnPublishedArticle, getArticles, getArticlesByUserId, getUser } from '../controller/users.js';
 import { createCart, getCart } from '../controller/cart.js';
+import { createArticleTogetherWithUser } from '../controller/article.js';
 
 export const userRouter = Router();
 
@@ -8,7 +9,7 @@ export const userRouter = Router();
 
  userRouter.get('/:id',)
 
- userRouter.post('',createUser)
+ userRouter.post('',createUsersWithInteractive)
 
  // profile
  userRouter.post('/:id/profiles',createProfile)
@@ -18,7 +19,9 @@ export const userRouter = Router();
 
  userRouter.get('/:id/articles',getArticlesByUserId)
 
- userRouter.post('/:id/articles',createArticle)
+ userRouter.post('/articles',createArticleTogetherWithUser)
+
+ userRouter.post('/:id/articles',createArticleWithUserId)
  
  userRouter.delete('/:id/articles',deleteUnPublishedArticle)
 
