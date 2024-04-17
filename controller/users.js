@@ -1,9 +1,42 @@
 import { PrismaClient } from "@prisma/client";
+import {z} from 'zod';
 
+const ArticleCreateSchema = z.object({
+    title: z.string().max(10),
+    content: z.string().max(1000),
+    state: z.enum(["DRAFT","PUBLISHED"]),
+    userId:z.number()
+})
 
 const prisma = new PrismaClient({
     log:['query']
-});
+}).$extends({
+    query:{
+        article:{
+            create:({args, query}) =>{
+                args.data = ArticleCreateSchema.parse(args.data)
+                return query(args)
+            }
+        }
+    },
+    result:{
+        profile:{
+            deliverySenderInfo:{
+                need:{
+                    name: true,
+                    addr: true,
+                    phone: true
+                },
+                compute:(profile) => {
+                    const {name, addr, phone} = profile;
+                    return `${name} ${addr} ${phone}`;
+                }
+            }
+        }
+    }
+})
+
+
 
 //user
 export const getUser = async (req,res) => {
@@ -26,6 +59,15 @@ export const getUserId = async (req, res) => {
     });
 
     res.json(user);
+}
+
+export const getSenderInfoByUserId = async(req,res) =>{
+    const deliverySenderInfo = await prisma.profile.findFirst({
+        where:{
+        userId: +req.params.id
+    }
+});
+    res.json(deliverySenderInfo);
 }
 
 export const createUser = async (req,res) => {
@@ -131,25 +173,30 @@ export const getArticlesByUserId = async (req, res) =>{
 
 
 export const createArticleWithUserId = async (req, res) =>{
-
-    const user = await prisma.user.findUnique({where:{
-        id: +req.params.id
-    }})
-
-    if(!user){
-        throw Error("해당하는 사용자가 존재하지 않습니다.");
+    try{
+        const user = await prisma.user.findFirst({where:{
+            id: +req.params.id
+        }})
+    
+        if(!user){
+            throw Error("해당하는 사용자가 존재하지 않습니다.");
+        }
+    
+        const data = {
+            ... req.body,
+            userId:user.id
+        }
+    
+        const article = await prisma.article.create({
+            data
+        });
+    
+        res.json(article);
+    }catch(err){
+       console.log(err);
+      res.status(403).json(err);
     }
-
-    const data = {
-        ... req.body,
-        userId:user.id
-    }
-
-    const article = await prisma.article.create({
-        data
-    });
-
-    res.json(article);
+   
 }
 
 export const createUsersWithInteractive = async (req,res) =>{

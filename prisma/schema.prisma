@@ -35,6 +35,7 @@ model Article{
 
 model Profile{
   id Int @id @default(autoincrement())
+  name String
   addr String
   phone String
   userId Int @unique // foreign key 
@@ -48,7 +49,6 @@ model Profile{
 model User{
   id Int @id @default(autoincrement())
   email String @unique
-  name  String 
   profile Profile?
   articles Article[]
   carts Cart[]
